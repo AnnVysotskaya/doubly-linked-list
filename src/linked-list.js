@@ -20,6 +20,7 @@ class LinkedList {
         }
 
         this.length++;
+        return this;
     }
 
     head() {
@@ -62,17 +63,24 @@ class LinkedList {
             throw new Error("Invlid index");
         }
 
-        while (count < index) {
-            beforeNodeToInsert = currentNode;
-            afterNodeToInsert = currentNode.next;
-            count++;
+        if (length === 0) {
+            this.append(data);
         }
+        else {
+            while (count < index) {
+                beforeNodeToInsert = currentNode;
+                afterNodeToInsert = currentNode.next;
+                count++;
+            }
 
-        beforeNodeToInsert.next = node;
-        node.prev = beforeNodeToInsert;
-        afterNodeToInsert.prev = node;
-        node.next = afterNodeToInsert;
+            beforeNodeToInsert.next = node;
+            node.prev = beforeNodeToInsert;
+            afterNodeToInsert.prev = node;
+            node.next = afterNodeToInsert;
+        }
         this.length++;
+
+        return this;
     }
 
     isEmpty() {
@@ -83,46 +91,50 @@ class LinkedList {
         var currentNode = this._head,
             length = this.length,
             count = 1;
-
-        while (count <= length) {
-            currentNode.data = null;
-            currentNode.prev = null;
-            currentNode = currentNode.next;
-            count++;
-            this.length--;
+        if (currentNode != null) {
+            while (count <= length) {
+                currentNode.data = null;
+                currentNode.prev = null;
+                currentNode = currentNode.next;
+                count++;
+                this.length--;
+            }
         }
+        return this;
     }
 
     deleteAt(index) {
         var currentNode = this._head,
             length = this.length,
-            count = 0,
-            beforeNodeToDelete = null,
-            nodeToDelete = null;
-
-        // invalid index
-        if (index < 0 || index > length) {
-            throw new Error("Invalid index");
+            count = 0;
+        switch (index) {
+            case (index < 0 || index > length):
+                throw new Error("Invalid index");
+                break;
+            case (0):
+                if (length === 1) {
+                    currentNode.data = null;
+                    currentNode.next = null;
+                    currentNode.data = null;
+                } else {
+                    currentNode = currentNode.next;
+                    currentNode.prev = null;
+                }
+                break;
+            case (length - 1):
+                currentNode = this._tail;
+                this._tail = currentNode.prev;
+                this._tail.next = null;
+                break;
+            default:
+                while (count++ < index) {
+                    currentNode = currentNode.next;
+                }
+                currentNode.prev.next = currentNode.next;
         }
 
-        // delete first node
-        if (index === 1) {
-            this._head = currentNode.next;
-            currentNode = null;
-            this.length--;
-        }
-
-        // delete other node
-        while (count < index) {
-            beforeNodeToDelete = currentNode;
-            nodeToDelete = currentNode.next;
-            count++;
-        }
-
-        beforeNodeToDelete.next = nodeToDelete.next;
-        nodeToDelete = null;
         this.length--;
-
+        return this;
     }
 
     reverse() {
@@ -138,6 +150,7 @@ class LinkedList {
             head = head.next;
             count--;
         }
+        return this;
     }
 
     indexOf(data) {
